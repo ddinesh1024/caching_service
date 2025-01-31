@@ -80,7 +80,6 @@ class CachingServiceTest {
         verify(databaseService, times(1)).fetch("2"); // Ensure DB fetch is called
     }
 
-    
 
     @Test
     void testAddNullEntityThrowsException() {
