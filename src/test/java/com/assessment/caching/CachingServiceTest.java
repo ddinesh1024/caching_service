@@ -67,4 +67,36 @@ class CachingServiceTest {
         assertNull(cachingService.get("1"), "Cache should be empty after clear");
         assertNotNull(databaseService.fetch("1"), "Database should still contain the entity");
     }
+
+    @Test
+    void testGetEntityFromDatabaseIfNotInCache() {
+        Entity entity = new Entity("2", "DatabaseEntity");
+        when(databaseService.fetch("2")).thenReturn(entity);
+
+        Entity result = cachingService.get("2");
+
+        assertNotNull(result);
+        assertEquals(entity, result);
+        verify(databaseService, times(1)).fetch("2"); // Ensure DB fetch is called
+    }
+
+    
+
+    @Test
+    void testAddNullEntityThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> cachingService.add(null));
+        assertEquals("Entity or Entity ID cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void testGetWithNullIdThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> cachingService.get(null));
+        assertEquals("ID cannot be null.", exception.getMessage());
+    }
+
+    @Test
+    void testRemoveNullEntityThrowsException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> cachingService.remove(null));
+        assertEquals("Entity or Entity ID cannot be null.", exception.getMessage());
+    }
 }
